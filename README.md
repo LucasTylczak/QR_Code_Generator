@@ -23,12 +23,14 @@ QR Code Generator est un script Python qui vous permet de générer des codes QR
 1. Cloner le dépot et exécuter :
 ### Kali Linux
 ```bash
+pip install qrcode
 git clone https://github.com/LucasTylczak/QR_Code_Generator.git
 cd QR_Code_Generator
 python3 QR_Code_Generator.py
 ```
 ### Windows Powershell
 ```powershell
+pip install qrcode
 git clone https://github.com/LucasTylczak/QR_Code_Generator.git
 cd QR_Code_Generator
 python QR_Code_Generator.py
