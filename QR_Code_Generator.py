@@ -1,27 +1,43 @@
-import qrcode
+import speech_recognition as sr
+from googletrans import Translator
+import pyttsx3
 
-print("╔═══════════════════════╦════════════════════════════════╦═══════════════════════╗")
-print("║  Dev : LucasTylczak   ║  Info : Qr code generator 	    ║  Programm : Python    ║")
-print("╚═══════════════════════╩════════════════════════════════╩═══════════════════════╝")
+# Initialiser le moteur de synthèse vocale
+engine = pyttsx3.init()
 
-def generate_qr_code(data, file_name):
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=10,
-        border=4,
-    )
-    qr.add_data(data)
-    qr.make(fit=True)
+# Initialiser le traducteur
+translator = Translator()
 
-    img = qr.make_image(fill_color="black", back_color="white")
-    img.save(file_name)
-    print(f"Le code QR a été généré avec succès et enregistré sous le nom : {file_name}")
+# Fonction pour la reconnaissance vocale et la traduction
+def speech_to_text_and_translate(source_lang='auto', target_lang='en'):
+    # Configuration du recognizer
+    recognizer = sr.Recognizer()
 
-if __name__ == "__main__":
-    print("Que voulez-vous encoder dans le code QR ?")
-    user_input = input("Entrez du texte, une URL ou des données structurées : ")
+    with sr.Microphone() as source:
+        print("Dites quelque chose...")
+        audio = recognizer.listen(source)
 
-    file_name = input("Entrez le nom du fichier pour enregistrer le code QR (ex: qr_code.png) : ")
+        try:
+            # Reconnaissance vocale
+            text = recognizer.recognize_google(audio, language=source_lang)
+            print("Vous avez dit:", text)
 
-    generate_qr_code(user_input, file_name)
+            # Traduction
+            translation = translator.translate(text, src=source_lang, dest=target_lang)
+            translated_text = translation.text
+            print("Traduction:", translated_text)
+
+            # Synthèse vocale de la traduction
+            engine.say(translated_text)
+            engine.runAndWait()
+
+        except sr.UnknownValueError:
+            print("Impossible de comprendre l'audio.")
+        except sr.RequestError as e:
+            print("Erreur lors de la demande de service de reconnaissance vocale : {0}".format(e))
+        except Exception as e:
+            print("Une erreur s'est produite : ", str(e))
+
+# Tester la fonction
+while True:
+    speech_to_text_and_translate()
